@@ -30,11 +30,24 @@ function kaprekarStep(n) {
 }
 
 function throwConfetti() {
-  const confetti = document.createElement("div");
-  confetti.className = "confetti";
-  document.body.appendChild(confetti);
-  setTimeout(() => confetti.remove(), 3000);
-}
+    for (let i = 0; i < 50; i++) {
+      const confetto = document.createElement("div");
+      confetto.className = "confetto";
+      confetto.style.left = Math.random() * 100 + "vw";
+      confetto.style.animationDelay = Math.random() * 0.5 + "s";
+      confetto.style.backgroundColor = getRandomConfettiColor();
+  
+      document.body.appendChild(confetto);
+  
+      setTimeout(() => confetto.remove(), 3000);
+    }
+  }
+  
+  function getRandomConfettiColor() {
+    const colors = ["#f94144", "#f3722c", "#f9c74f", "#90be6d", "#577590", "#43aa8b", "#ff6f91"];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
+  
 
 function celebrateKaprekar() {
   throwConfetti();
