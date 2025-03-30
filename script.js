@@ -4,7 +4,8 @@ const startBtn = document.getElementById("startBtn");
 const continueBtn = document.getElementById("continueBtn");
 const stepsDiv = document.getElementById("steps");
 const kaprekarMessages = {
-  8: "You glitched the whole thing the hell out<br>wow"
+  9: "...9 is crazy this wasn't supposed to happen...",
+  8: "You spammed the button<br>wow",
   7: "This is the longest journey, 7 steps!🐢<br>Best of the best, only 21.9% take this long!",
   6: "You really took a scenic route, 6 steps!🐢<br>You're in the top 38.4% of slowest journeys to 6174!",
   5: "Takin' the long way around, 5 steps!🐢<br>Numbers have a 53.6% chance of taking 5 or more steps",
@@ -67,8 +68,14 @@ function celebrateKaprekar(stepsTaken) {
   continueBtn.classList.add("reached")
 
   const msgBox = document.getElementById("kaprekar-message");
-  msgBox.innerHTML = kaprekarMessages[stepsTaken] || "";
+  const msg = kaprekarMessages[stepsTaken] || "You've gone beyond the algorithm. 🌀";
+  msgBox.innerHTML = msg;
   msgBox.classList.add("show");
+  if (stepsTaken > 7) {
+    continueBtn.textContent = "Unplug Reality?";
+    continueBtn.classList.remove("btn-active");
+    continueBtn.classList.add("btn-finished");
+  }  
 }
 
 function animateStep(num1, num2, result) {
