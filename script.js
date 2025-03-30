@@ -8,8 +8,8 @@ const kaprekarMessages = {
   6: "You really took a scenic route, 6 steps!🐢<br>You're in the top 38.4% of slowest journeys to 6174!",
   5: "Takin' the long way around, 5 steps!🐢<br>Numbers have a 53.6% chance of taking 5 or more steps",
   4: "You took 4 steps to get there!<br>You're in the 66th percentile of slow journeys to 6174",
-  3: "Getting to 6174 in 3 steps or more<br>happens 90.4% of the time.",
-  2: "Getting to 6174 in 2 steps or more<br>happens 96.2% of the time.",
+  3: "Getting to 6174 in 3 steps or more happens<br>90.4% of the time. Find a longer route!",
+  2: "Getting to 6174 in 2 steps or more happens<br>96.2% of the time. Find a longer route!",
   1: "Getting to 6174 in 1 step is technically rare<br>But unimpressive all things considered"
 };
 
@@ -63,9 +63,7 @@ function celebrateKaprekar(stepsTaken) {
   throwConfetti();
   continueBtn.disabled = true;
   continueBtn.textContent = "Kaprekar reached!";
-  continueBtn.style.backgroundColor = "#ccffcc";
-  continueBtn.style.color = "#006600";
-  continueBtn.style.border = "1px solid #009900";
+  continueBtn.classList.add("reached")
 
   const msgBox = document.getElementById("kaprekar-message");
   msgBox.innerHTML = kaprekarMessages[stepsTaken] || "";
@@ -125,9 +123,7 @@ function clearSteps() {
   continueBtn.style.display = "none";
   continueBtn.disabled = false;
   lastResult = "0000";
-  continueBtn.style.backgroundColor = "";
-  continueBtn.style.color = "";
-  continueBtn.style.border = "";
+  continueBtn.classList.remove("reached")
 
   const msgBox = document.getElementById("kaprekar-message");
   msgBox.textContent = "";
