@@ -29,6 +29,22 @@ function kaprekarStep(n) {
   return [pad4(high), pad4(low), pad4(result)];
 }
 
+function throwConfetti() {
+  const confetti = document.createElement("div");
+  confetti.className = "confetti";
+  document.body.appendChild(confetti);
+  setTimeout(() => confetti.remove(), 3000);
+}
+
+function celebrateKaprekar() {
+  throwConfetti();
+  continueBtn.disabled = true;
+  continueBtn.textContent = "Kaprekar reached!";
+  continueBtn.style.backgroundColor = "#ccffcc";
+  continueBtn.style.color = "#006600";
+  continueBtn.style.border = "1px solid #009900";
+}
+
 function animateStep(num1, num2, result) {
   stepCount++;
   const row = document.createElement("div");
@@ -45,25 +61,35 @@ function animateStep(num1, num2, result) {
   row.appendChild(content);
   stepsDiv.appendChild(row);
 
-  const parts = [num1, "-", num2, "=", result];
-  parts.forEach((text, i) => {
-    setTimeout(() => {
-      const span = document.createElement("span");
-      span.textContent = text;
-      content.appendChild(span);
-    }, i * 400);
-  });
-
+  // update button state immediately before animation
   lastResult = result;
 
   if (result === KAPREKAR_CONSTANT) {
-    continueBtn.disabled = true;
-    continueBtn.textContent = "Kaprekar reached!";
+    celebrateKaprekar();
   } else {
     continueBtn.textContent = `Continue with ${lastResult}`;
     continueBtn.disabled = false;
     continueBtn.style.display = "inline-block";
+    continueBtn.style.backgroundColor = "";
+    continueBtn.style.color = "";
+    continueBtn.style.border = "";
   }
+
+  continueBtn.disabled = true; // prevent spamming until animation completes
+
+  const parts = [num1, "-", num2, "=", result];
+  parts.forEach((text, i) => {
+    const delay = i * 300;
+    setTimeout(() => {
+      const span = document.createElement("span");
+      span.textContent = text;
+      content.appendChild(span);
+
+      if (i === parts.length - 1 && result !== KAPREKAR_CONSTANT) {
+        continueBtn.disabled = false; // re-enable only after animation
+      }
+    }, delay);
+  });
 }
 
 function clearSteps() {
@@ -72,6 +98,9 @@ function clearSteps() {
   continueBtn.style.display = "none";
   continueBtn.disabled = false;
   lastResult = "0000";
+  continueBtn.style.backgroundColor = "";
+  continueBtn.style.color = "";
+  continueBtn.style.border = "";
 }
 
 startBtn.onclick = () => {
@@ -88,6 +117,7 @@ startBtn.onclick = () => {
 };
 
 continueBtn.onclick = () => {
+  if (continueBtn.disabled) return;
   const [n1, n2, res] = kaprekarStep(lastResult);
   animateStep(n1, n2, res);
 };

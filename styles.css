@@ -94,4 +94,19 @@ body {
     display: flex;
     gap: 5px;
   }
-  
+
+  /* Confetti celebration */
+.confetti {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image: radial-gradient(circle at 10% 20%, #ff7f50 2px, transparent 2px),
+                    radial-gradient(circle at 80% 30%, #87ceeb 2px, transparent 2px),
+                    radial-gradient(circle at 50% 50%, #32cd32 2px, transparent 2px),
+                    radial-gradient(circle at 70% 80%, #ff69b4 2px, transparent 2px),
+                    radial-gradient(circle at 30% 70%, #ffa500 2px, transparent 2px);
+  background-repeat: repeat;
+  background-size: 100px
