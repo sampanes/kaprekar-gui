@@ -100,8 +100,6 @@ function animateStep(num1, num2, result) {
     continueBtn.style.border = "";
   }
 
-  continueBtn.disabled = true; // prevent spamming until animation completes
-
   const parts = [num1, "-", num2, "=", result];
   parts.forEach((text, i) => {
     const delay = i * 300;
@@ -111,7 +109,7 @@ function animateStep(num1, num2, result) {
       content.appendChild(span);
 
       if (i === parts.length - 1 && result !== KAPREKAR_CONSTANT) {
-        continueBtn.disabled = false; // re-enable only after animation
+        continueBtn.disabled = false;
       }
     }, delay);
   });
