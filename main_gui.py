@@ -1,6 +1,7 @@
 import tkinter as tk
-import random
-from nikki_utils import kaprekar_step, are_digits_all_the_same
+from nikki_utils import kaprekar_step, are_digits_all_the_same, get_start_button_string
+
+KAPREKAR_CONSTANT = 6174
 
 # === Style Constants ===
 BG_MAIN         = "#e6e6e6"
@@ -120,8 +121,10 @@ class DigitApp(tk.Tk):
         self.update_start_button()
 
     def update_start_button(self):
-        current_num = ''.join(str(d.value) for d in self.digits)
-        self.start_btn.config(text=f"Start with {current_num}")
+        # current_num = ''.join(str(d.value) for d in self.digits)
+        digit_values = [d.value for d in self.digits]
+        start_btn_string = get_start_button_string(*digit_values)
+        self.start_btn.config(text=start_btn_string)
 
     def flash_background(self, color=ERROR_BKG, duration=200):
         original = self.cget("bg")
@@ -137,11 +140,33 @@ class DigitApp(tk.Tk):
         for widget in self.output_frame.winfo_children():
             widget.destroy()
 
-        self.last_result = None
         self.step_count = 0
+        self.last_result = None
 
         if self.continue_btn.winfo_ismapped():
             self.continue_btn.pack_forget()
+
+        # Reset background in case we celebrated
+        self.configure(bg=BG_MAIN)
+        self.output_frame.configure(bg=BG_MAIN)
+
+        # Remove celebration label if it exists
+        if hasattr(self, "celebration_label"):
+            self.celebration_label.destroy()
+            del self.celebration_label
+
+    def celebrate_kaprekar_success(self):
+        self.configure(bg="#ccffcc")  # Light green
+        self.output_frame.configure(bg="#ccffcc")
+
+        self.celebration_label = tk.Label(
+            self,
+            text="🎉 You reached Kaprekar's Constant! 🎉",
+            font=(FONT_NAME, FONT_SIZE_3, "bold"),
+            bg="#ccffcc",
+            fg="#006600"
+        )
+        self.celebration_label.pack(pady=PAD_SINGLE)
 
     def run_kaprekar(self):
         self.clear_all_steps()
@@ -194,12 +219,20 @@ class DigitApp(tk.Tk):
                     fg=FG_MAIN
                 )
                 label.pack(side="left", padx=5)
+                if index == len(parts)-1 and step_values[2] == KAPREKAR_CONSTANT:
+                    self.after(25, self.celebrate_kaprekar_success)
                 self.after(400, lambda: add_part(index + 1))
 
         add_part()
-    
+
     def update_continue_button(self):
         self.continue_btn.config(text=f"Continue with {self.last_result}")
+
+        if self.last_result == KAPREKAR_CONSTANT:
+            self.continue_btn.config(state="disabled")
+        else:
+            self.continue_btn.config(state="normal")
+
         if not self.continue_btn.winfo_ismapped():
             self.continue_btn.pack(padx=PAD_SINGLE, pady=(PAD_SINGLE, 0))
 
