@@ -69,3 +69,6 @@ if __name__ == "__main__":
     takes_all_seven, valids = generate_kaprekar_stats()
     print(f"\nWe have concluded that {len(takes_all_seven)} combos take all seven steps"\
           f"\nOut of {valids} valid user entries (10,000 minus the ten \"all repeats\" entries)")
+    with open("valids.txt", "w") as f:
+        for item in takes_all_seven:
+            f.write(f"{item}\n")
