@@ -170,3 +170,4 @@ digits.forEach(d => {
 });
 
 updateStartText();
+alert("JS is running");
