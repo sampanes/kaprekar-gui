@@ -4,6 +4,7 @@ const startBtn = document.getElementById("startBtn");
 const continueBtn = document.getElementById("continueBtn");
 const stepsDiv = document.getElementById("steps");
 const kaprekarMessages = {
+  8: "You glitched the whole thing the hell out<br>wow"
   7: "This is the longest journey, 7 steps!🐢<br>Best of the best, only 21.9% take this long!",
   6: "You really took a scenic route, 6 steps!🐢<br>You're in the top 38.4% of slowest journeys to 6174!",
   5: "Takin' the long way around, 5 steps!🐢<br>Numbers have a 53.6% chance of taking 5 or more steps",
@@ -146,6 +147,8 @@ startBtn.onclick = () => {
 continueBtn.onclick = () => {
   continueBtn.blur();
   if (continueBtn.disabled) return;
+  let low  = parseInt([...digits].sort((a,b) => a - b).join(''));
+  if (low == 1467) return;
   const [n1, n2, res] = kaprekarStep(lastResult);
   animateStep(n1, n2, res);
 };
