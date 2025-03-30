@@ -136,6 +136,7 @@ function clearSteps() {
 
 
 startBtn.onclick = () => {
+  startBtn.blur();
   const num = digits.map(d => d.textContent).join("");
   clearSteps();
 
@@ -149,6 +150,7 @@ startBtn.onclick = () => {
 };
 
 continueBtn.onclick = () => {
+  continueBtn.blur();
   if (continueBtn.disabled) return;
   const [n1, n2, res] = kaprekarStep(lastResult);
   animateStep(n1, n2, res);

@@ -112,9 +112,21 @@ body {
   background-size: 100px
   }
 
-  button:focus {
+  button:focus,
+  button:active {
     outline: none;
+    box-shadow: none;
   }
+  
+  /* Override default browser styles for disabled buttons */
+  button:disabled {
+    background-color: #444 !important;
+    color: #bbb !important;
+    border: none !important;
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
   
   button:active {
     outline: none;
