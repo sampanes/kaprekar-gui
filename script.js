@@ -6,9 +6,9 @@ const stepsDiv = document.getElementById("steps");
 const kaprekarMessages = {
   9: "...9 is crazy this wasn't supposed to happen...",
   8: "You spammed the button<br>wow",
-  7: "This is the longest journey, 7 steps!🐢<br>Best of the best, only 21.9% take this long!",
-  6: "You really took a scenic route, 6 steps!🐢<br>You're in the top 38.4% of slowest journeys to 6174!",
-  5: "Takin' the long way around, 5 steps!🐢<br>Numbers have a 53.6% chance of taking 5 or more steps",
+  7: "This is the longest journey, 7 steps! 🐢<br>Best of the best, only 21.9% take this long!",
+  6: "You really took a scenic route, 6 steps! 🐢<br>You're in the top 38.4% of slowest journeys to 6174!",
+  5: "Takin' the long way around, 5 steps! 🐢<br>Numbers have a 53.6% chance of taking 5 or more steps",
   4: "You took 4 steps to get there!<br>You're in the 66th percentile of slow journeys to 6174",
   3: "Getting to 6174 in 3 steps or more happens<br>90.4% of the time. Find a longer route!",
   2: "Getting to 6174 in 2 steps or more happens<br>96.2% of the time. Find a longer route!",
