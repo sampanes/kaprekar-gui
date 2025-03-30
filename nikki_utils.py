@@ -23,10 +23,7 @@ def kaprekar_step(n: int):
     
     we want to return largest, smallest, and difference (so subtract, largest - smallest)
     '''
-    l=largest_ordered_int(n)
-    s=smallest_ordered_int(n)
-    d=l-s
-    return (l,s,d)
+    return (1,2,3)
 
 def are_digits_all_the_same(a, b, c, d):
     '''
@@ -38,7 +35,7 @@ def are_digits_all_the_same(a, b, c, d):
     this is not an exercize in being pythonic and finding the coolest way
     just getting it to work is the goal!
     '''
-    return a==b==c==d
+    return False
 
 def get_start_button_string(a, b, c, d):
     '''
@@ -47,7 +44,7 @@ def get_start_button_string(a, b, c, d):
 
     "Start with ####"
     '''
-    return f"Start with {a}{b}{c}{d}"
+    return f"some {a} string {b}"
 
 # BELOW THIS IS JUST WAYS TO TEST ABOVE STUFF
 # and also my helper funcs lol
