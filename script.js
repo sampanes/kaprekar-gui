@@ -30,12 +30,13 @@ function kaprekarStep(n) {
 }
 
 function throwConfetti() {
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 40; i++) {
       const confetto = document.createElement("div");
       confetto.className = "confetto";
-      confetto.style.left = Math.random() * 100 + "vw";
-      confetto.style.animationDelay = Math.random() * 0.5 + "s";
+      confetto.style.left = Math.random() * window.innerWidth + "px";
+      confetto.style.top = "-20px";
       confetto.style.backgroundColor = getRandomConfettiColor();
+      confetto.style.animationDelay = Math.random() * 0.3 + "s";
   
       document.body.appendChild(confetto);
   
@@ -43,7 +44,8 @@ function throwConfetti() {
     }
   }
   
-  function getRandomConfettiColor() {
+  
+function getRandomConfettiColor() {
     const colors = ["#f94144", "#f3722c", "#f9c74f", "#90be6d", "#577590", "#43aa8b", "#ff6f91"];
     return colors[Math.floor(Math.random() * colors.length)];
   }
@@ -56,6 +58,7 @@ function celebrateKaprekar() {
   continueBtn.style.backgroundColor = "#ccffcc";
   continueBtn.style.color = "#006600";
   continueBtn.style.border = "1px solid #009900";
+  continueBtn.blur();
 }
 
 function animateStep(num1, num2, result) {
