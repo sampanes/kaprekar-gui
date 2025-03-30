@@ -3,6 +3,16 @@ const digits = ["d1", "d2", "d3", "d4"].map(id => document.getElementById(id));
 const startBtn = document.getElementById("startBtn");
 const continueBtn = document.getElementById("continueBtn");
 const stepsDiv = document.getElementById("steps");
+const kaprekarMessages = {
+  7: "This is the longest journey, 7 steps!🐢<br>Best of the best, only 21.9% take this long!",
+  6: "You really took a scenic route, 6 steps!🐢<br>You're in the top 38.4% of slowest journeys to 6174!",
+  5: "Takin' the long way around, 5 steps!🐢<br>Numbers have a 53.6% chance of taking 5 or more steps",
+  4: "You took 4 steps to get there!<br>You're in the 66th percentile of slow journeys to 6174",
+  3: "Getting to 6174 in 3 steps or more<br>happens 90.4% of the time.",
+  2: "Getting to 6174 in 2 steps or more<br>happens 96.2% of the time.",
+  1: "Getting to 6174 in 1 step is technically rare<br>But unimpressive all things considered"
+};
+
 
 let stepCount = 0;
 let lastResult = "0000";
@@ -30,35 +40,36 @@ function kaprekarStep(n) {
 }
 
 function throwConfetti() {
-    for (let i = 0; i < 40; i++) {
-      const confetto = document.createElement("div");
-      confetto.className = "confetto";
-      confetto.style.left = Math.random() * window.innerWidth + "px";
-      confetto.style.top = "-20px";
-      confetto.style.backgroundColor = getRandomConfettiColor();
-      confetto.style.animationDelay = Math.random() * 0.3 + "s";
-  
-      document.body.appendChild(confetto);
-  
-      setTimeout(() => confetto.remove(), 3000);
-    }
+  for (let i = 0; i < 40; i++) {
+    const confetto = document.createElement("div");
+    confetto.className = "confetto";
+    confetto.style.left = Math.random() * window.innerWidth + "px";
+    confetto.style.top = "-20px";
+    confetto.style.backgroundColor = getRandomConfettiColor();
+    confetto.style.animationDelay = Math.random() * 0.3 + "s";
+
+    document.body.appendChild(confetto);
+
+    setTimeout(() => confetto.remove(), 3000);
   }
-  
+}
   
 function getRandomConfettiColor() {
-    const colors = ["#f94144", "#f3722c", "#f9c74f", "#90be6d", "#577590", "#43aa8b", "#ff6f91"];
-    return colors[Math.floor(Math.random() * colors.length)];
-  }
+  const colors = ["#f94144", "#f3722c", "#f9c74f", "#90be6d", "#577590", "#43aa8b", "#ff6f91"];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
   
-
-function celebrateKaprekar() {
+function celebrateKaprekar(stepsTaken) {
   throwConfetti();
   continueBtn.disabled = true;
   continueBtn.textContent = "Kaprekar reached!";
   continueBtn.style.backgroundColor = "#ccffcc";
   continueBtn.style.color = "#006600";
   continueBtn.style.border = "1px solid #009900";
-  continueBtn.blur();
+
+  const msgBox = document.getElementById("kaprekar-message");
+  msgBox.innerHTML = kaprekarMessages[stepsTaken] || "";
+  msgBox.classList.add("show");
 }
 
 function animateStep(num1, num2, result) {
@@ -81,7 +92,7 @@ function animateStep(num1, num2, result) {
   lastResult = result;
 
   if (result === KAPREKAR_CONSTANT) {
-    celebrateKaprekar();
+    celebrateKaprekar(stepCount);
   } else {
     continueBtn.textContent = `Continue with ${lastResult}`;
     continueBtn.disabled = false;
@@ -117,7 +128,12 @@ function clearSteps() {
   continueBtn.style.backgroundColor = "";
   continueBtn.style.color = "";
   continueBtn.style.border = "";
+
+  const msgBox = document.getElementById("kaprekar-message");
+  msgBox.textContent = "";
+  msgBox.classList.remove("show");
 }
+
 
 startBtn.onclick = () => {
   const num = digits.map(d => d.textContent).join("");
