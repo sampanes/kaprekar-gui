@@ -63,12 +63,21 @@ def how_many_combos(digits):
             my_set.add(canonical)
     return my_set
 
+def shorten_list(big_list):
+    ret_set=set()
+    for n in big_list:
+        ret_set.add(int("".join(sorted(pad4(n)))))
+    ret_list = list(ret_set)
+    ret_list.sort()
+    return ret_list
+
 if __name__ == "__main__":
     c=how_many_combos(digits=4)
     print(f"hypothetically there are only {len(c)} unique paths, but we want every possible start a user can put in randomly")
     takes_all_seven, valids = generate_kaprekar_stats()
     print(f"\nWe have concluded that {len(takes_all_seven)} combos take all seven steps"\
           f"\nOut of {valids} valid user entries (10,000 minus the ten \"all repeats\" entries)")
-    with open("valids.txt", "w") as f:
-        for item in takes_all_seven:
+    short=shorten_list(takes_all_seven)
+    with open("valids_shortlist.txt", "w") as f:
+        for item in short:
             f.write(f"{item}\n")
