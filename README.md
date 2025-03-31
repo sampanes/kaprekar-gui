@@ -1,25 +1,39 @@
-# kaprekar-gui
-Display how most four digit numbers can be reduced to the same special number
+# Kaprekar Constant Tools (Python GUI)
 
-### This is a living document or whatever
-I am making this to make coding fun
-the utils is the exercise, the gui is what makes it feel real/useful
-I will finish this readme when I finish the project
-I expect there to be a lot more info eventually
+This branch contains Python utilities and analysis scripts related to the Kaprekar routine.
 
-For now, I am going to just use some placeholders
+## Features
 
-* here's a bullet
+- Full implementation of the Kaprekar step logic
+- Generator for all valid 4-digit inputs (excluding identical digits)
+- Step counter that computes how many steps it takes to reach 6174
+- Percentile analysis of all valid combinations
+- Script to export valid entries and step counts for web usage
+
+## How to Use
+
+### Setup
+
+1. Clone the repository.
+2. (Optional but recommended) Set up a Python virtual environment:
+    ```bash
+    python -m venv venv
+    venv\Scripts\activate # on Windows. or source venv/bin/activate
+    ```
+
+3. Install any required packages (tkinter probably?).
+
+### Running the GUI
+
+```bash
+python main_gui.py
 ```
-here's code snippet
-```
-* next bullet
-```python
-# a python comment
-for ii in range(10):
-    '''
-    Python block comment
-    '''
-    if ii % 2 != 0:
-        print(f"Uneven number: {ii}")
-```
+
+This will start a popup:
+- You can click arrows to change the numbers
+- Click start to do step 1 on your number
+- Click continue to keep doing steps on your last result
+
+---
+
+This branch is made as a neat visual exercise for my friend so hopefully it is not working right now and only needs edits in the utils file to start working :)
