@@ -15,10 +15,10 @@ body {
     border-radius: 12px;
     padding: 20px;
     margin: 20px;
-    max-width: 400px;
-    width: 100%;
+    max-width: 100%;
+    width: clamp(300px, calc(60px * var(--digit-count)), 95vw);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
+  }  
   
   h1 {
     text-align: center;
