@@ -40,6 +40,10 @@ const convergents = {
   9: new Set([763197633, 954197541, 863098632, 865395432, 844296552, 964395531,
               762098733, 965296431, 865296432, 976494321, 874197522, 753098643,
               883098612, 554999445, 873197622, 864197532]),
+  10: new Set([8653266432, 9755084421, 6431088654, 9751088421, 8633086632, 9975084201, 8655264432,
+               7533086643, 8433086652, 9775084221, 6433086654, 8765264322, 8533176642, 8732087622,
+               8633266632, 6543086544, 9753086421, 6333176664, 6433266654, 8332087662, 4332087666,
+               8321088762]),
 };
 
 
@@ -47,8 +51,9 @@ let stepCount = 0;
 let resultList = [];
 let numDigits = 4;
 let lastResult = "0000";
-const MIN_DIGITS = 2;
-const MAX_DIGITS = 9;
+const convergentKeys = Object.keys(convergents).map(k => parseInt(k));
+const MIN_DIGITS = Math.min(...convergentKeys);
+const MAX_DIGITS = Math.max(...convergentKeys);
 
 function getKaprekarMessage(stepsTaken) {
   const messagesForDigits = kaprekarMessages[numDigits] || {};
