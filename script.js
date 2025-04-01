@@ -1,5 +1,4 @@
 // script.js
-const digits = ["d1", "d2", "d3", "d4"].map(id => document.getElementById(id));
 const startBtn = document.getElementById("startBtn");
 const continueBtn = document.getElementById("continueBtn");
 const stepsDiv = document.getElementById("steps");
@@ -19,9 +18,68 @@ const kaprekarMessages = {
 let stepCount = 0;
 let lastResult = "0000";
 const KAPREKAR_CONSTANT = "6174";
+const MIN_DIGITS = 2;
+const MAX_DIGITS = 9;
+
+let numDigits = 4;
+
+// Updates the #clickable-digits container to have exactly numDigits children.
+function updateDigitsContainer() {
+  const container = document.getElementById("clickable-digits");
+  container.innerHTML = "";
+  for (let i = 1; i <= numDigits; i++) {
+    const digitDiv = document.createElement("div");
+    digitDiv.className = "digit";
+    digitDiv.id = "d" + i;
+    digitDiv.innerHTML = "0";
+
+    // Add click event to update the digit value (example: increment the digit)
+    digitDiv.addEventListener("click", function () {
+      let current = parseInt(digitDiv.textContent);
+      current = (current + 1) % 10;
+      digitDiv.textContent = current;
+      updateStartText(); // Update button text if needed
+    });
+
+    container.appendChild(digitDiv);
+  }
+}
+
+
+// Returns the combined innerHTML values as a big integer.
+function getDigitsValue() {
+  const container = document.getElementById("clickable-digits");
+  let str = "";
+  Array.from(container.children).forEach(child => {
+    str += child.textContent;
+  });
+  return BigInt(str);
+}
+
+// Clicking "Kaprekar's" decreases numDigits (with a minimum of 1 digit).
+document.getElementById("kaprekar").addEventListener("click", function () {
+  if (numDigits > MIN_DIGITS) {
+    numDigits--;
+    updateDigitsContainer();
+    updateStartText()
+  }
+});
+
+// Clicking "Convergence" increases numDigits.
+document.getElementById("convergence").addEventListener("click", function () {
+  if (numDigits <= MAX_DIGITS) {
+    numDigits++;
+    updateDigitsContainer();
+    updateStartText()
+  }
+});
+
+// Initialize the container when the script loads.
+updateDigitsContainer();
+
 
 function updateStartText() {
-  const num = digits.map(d => d.textContent).join("");
+  const num = padByDigits(getDigitsValue());
   startBtn.textContent = `Start with ${num}`;
 }
 
@@ -29,16 +87,16 @@ function isAllDigitsSame(str) {
   return str.split('').every(ch => ch === str[0]);
 }
 
-function pad4(n) {
-  return String(n).padStart(4, '0');
+function padByDigits(n) {
+  return String(n).padStart(numDigits, '0');
 }
 
 function kaprekarStep(n) {
-  let digits = pad4(n).split('').map(Number);
-  let high = parseInt([...digits].sort((a,b) => b - a).join(''));
-  let low  = parseInt([...digits].sort((a,b) => a - b).join(''));
+  let digits = padByDigits(n).split('').map(Number);
+  let high = parseInt([...digits].sort((a, b) => b - a).join(''));
+  let low = parseInt([...digits].sort((a, b) => a - b).join(''));
   let result = high - low;
-  return [pad4(high), pad4(low), pad4(result)];
+  return [padByDigits(high), padByDigits(low), padByDigits(result)];
 }
 
 function throwConfetti() {
@@ -55,12 +113,12 @@ function throwConfetti() {
     setTimeout(() => confetto.remove(), 3000);
   }
 }
-  
+
 function getRandomConfettiColor() {
   const colors = ["#f94144", "#f3722c", "#f9c74f", "#90be6d", "#577590", "#43aa8b", "#ff6f91"];
   return colors[Math.floor(Math.random() * colors.length)];
 }
-  
+
 function celebrateKaprekar(stepsTaken) {
   throwConfetti();
   continueBtn.disabled = true;
@@ -75,7 +133,7 @@ function celebrateKaprekar(stepsTaken) {
     continueBtn.textContent = "Unplug Reality?";
     continueBtn.classList.remove("btn-active");
     continueBtn.classList.add("btn-finished");
-  }  
+  }
 }
 
 function animateStep(num1, num2, result) {
@@ -139,7 +197,8 @@ function clearSteps() {
 
 startBtn.onclick = () => {
   startBtn.blur();
-  const num = digits.map(d => d.textContent).join("");
+  const digitElements = Array.from(document.querySelectorAll("#clickable-digits .digit"));
+  const num = digitElements.map(d => d.textContent).join("");
   clearSteps();
 
   if (isAllDigitsSame(num)) {
@@ -154,19 +213,14 @@ startBtn.onclick = () => {
 continueBtn.onclick = () => {
   continueBtn.blur();
   if (continueBtn.disabled) return;
-  let low  = parseInt([...digits].sort((a,b) => a - b).join(''));
-  if (low == 1467) return;
+  // Get current digit elements and their text values
+  const digitValues = Array.from(document.querySelectorAll("#clickable-digits .digit"))
+    .map(d => d.textContent);
+  // Sort the values numerically, join them, and convert to a number
+  let low = parseInt(digitValues.sort((a, b) => a - b).join(''));
+  if (low === 1467) return;
   const [n1, n2, res] = kaprekarStep(lastResult);
   animateStep(n1, n2, res);
 };
-
-digits.forEach(d => {
-  d.onclick = () => {
-    let val = parseInt(d.textContent);
-    val = (val + 1) % 10;
-    d.textContent = val;
-    updateStartText();
-  };
-});
 
 updateStartText();
