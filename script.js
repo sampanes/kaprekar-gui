@@ -55,6 +55,7 @@ const convergentKeys = Object.keys(convergents).map(k => parseInt(k));
 const MIN_DIGITS = Math.min(...convergentKeys);
 const MAX_DIGITS = Math.max(...convergentKeys);
 
+
 function getKaprekarMessage(stepsTaken) {
   const messagesForDigits = kaprekarMessages[numDigits] || {};
   // Exact match for steps
@@ -91,9 +92,9 @@ function updateDigitsContainer() {
       digitDiv.textContent = current;
       updateStartText(); // Update button text if needed
     });
-    clearSteps();
     container.appendChild(digitDiv);
   }
+  clearSteps();
 }
 
 
@@ -180,7 +181,7 @@ function brokeReality(stepsTaken) {
 }
 
 function numIsConvergent(num) {
-  const numInt = parseInt(num);
+  const numInt = parseInt(num.replace(/,/g, ''));
   const set = convergents[numDigits];
   return set ? set.has(numInt) : false;
 }
@@ -228,7 +229,7 @@ function animateStep(num1, num2, result) {
     console.log("Animate step, num is convergent: ",resultList);
     const lastNum = parseInt(lastResult);
     const appearances = resultList.filter(n => n === lastNum).length;
-    
+
     if (appearances >= 2) {
       celebrateKaprekar(stepCount, "Loop closed!");
     } else {
@@ -248,7 +249,13 @@ function animateStep(num1, num2, result) {
     continueBtn.style.border = "";
   }
 
-  const parts = [num1, "-", num2, "=", result];
+  const parts = [
+    Number(num1).toLocaleString().padStart(numDigits),
+    " - ",
+    Number(num2).toLocaleString().padStart(numDigits),
+    " = ",
+    Number(result).toLocaleString().padStart(numDigits)
+  ];
   parts.forEach((text, i) => {
     const delay = i * 300;
     setTimeout(() => {
@@ -271,7 +278,6 @@ function clearSteps() {
   lastResult = "0000";
   continueBtn.classList.remove("reached")
   resultList = []
-  console.log("Clear steps: ",resultList);
   hideBottomMessage();
 }
 
@@ -292,6 +298,7 @@ startBtn.onclick = () => {
   startBtn.blur();
   const digitElements = Array.from(document.querySelectorAll("#clickable-digits .digit"));
   const num = digitElements.map(d => d.textContent).join("");  
+  console.log("Clearing Steps in startBtn onClick")
   clearSteps();
 
   if (isAllDigitsSame(num)) {
