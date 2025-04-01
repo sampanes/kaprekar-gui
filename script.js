@@ -111,6 +111,7 @@ function getDigitsValue() {
 document.getElementById("kaprekar").addEventListener("click", function() {
   if (numDigits > MIN_DIGITS) {
     numDigits--;
+    document.documentElement.style.setProperty('--digit-count', numDigits);
     updateDigitsContainer();
     updateStartText()
   }
@@ -120,6 +121,7 @@ document.getElementById("kaprekar").addEventListener("click", function() {
 document.getElementById("convergence").addEventListener("click", function() {
   if (numDigits < MAX_DIGITS) {
     numDigits++;
+    document.documentElement.style.setProperty('--digit-count', numDigits);
     updateDigitsContainer();
     updateStartText()
   }
