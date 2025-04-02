@@ -28,86 +28,110 @@ const kaprekarMessages = { /* TODO add more messages for 5+ digit loops */
   }
 };
 
-const convergents = {
-2:  [
-      [9, 81, 63, 27, 45, 9],
-    ],
-3:  [
-      [495, 495],
-    ],
-4:  [
-      [6174, 6174],
-    ],
-5:  [
-      [53955, 59994, 53955],
-      [61974, 82962, 75933, 63954, 61974],
-      [62964, 71973, 83952, 74943, 62964],
-    ],
-6:  [
-      [420876, 851742, 750843, 840852, 860832, 862632, 642654, 420876],
-      [549945, 549945],
-      [631764, 631764],
-    ],
-7:  [
-      [7509843, 9529641, 8719722, 8649432, 7519743, 8429652, 7619733, 8439552, 7509843],
-    ],
-8:  [
-      [43208766, 85317642, 75308643, 84308652, 86308632, 86326632, 64326654, 43208766],
-      [63317664, 63317664],
-      [64308654, 83208762, 86526432, 64308654],
-      [97508421, 97508421],
-    ],
-9:  [
-      [554999445, 554999445],
-      [753098643, 954197541, 883098612, 976494321, 874197522, 865296432, 763197633, 844296552, 762098733, 964395531, 863098632, 965296431, 873197622, 865395432, 753098643],
-      [864197532, 864197532],
-    ],
-10: [
-      [4332087666, 8533176642, 7533086643, 8433086652, 8633086632, 8633266632, 6433266654, 4332087666],
-      [6333176664, 6333176664],
-      [6431088654, 8732087622, 8655264432, 6431088654],
-      [6433086654, 8332087662, 8653266432, 6433086654],
-      [6543086544, 8321088762, 8765264322, 6543086544],
-      [9751088421, 9775084221, 9755084421, 9751088421],
-      [9753086421, 9753086421],
-      [9975084201, 9975084201],
-    ],
-};
-
+const convergenceData = {
+  2: [
+    { loop: [9, 81, 63, 27, 45, 9], maxSteps: 2 }
+  ],
+  3: [
+    { loop: [495, 495], maxSteps: 6 }
+  ],
+  4: [
+    { loop: [6174, 6174], maxSteps: 7 }
+  ],
+  5: [
+    { loop: [53955, 59994, 53955], maxSteps: 2 },
+    { loop: [61974, 82962, 75933, 63954, 61974], maxSteps: 6 },
+    { loop: [62964, 71973, 83952, 74943, 62964], maxSteps: 6 }
+  ],
+  6: [
+    { loop: [420876, 851742, 750843, 840852, 860832, 862632, 642654, 420876],maxSteps: 13 },
+    { loop: [549945, 549945], maxSteps: 1 },
+    { loop: [631764, 631764], maxSteps: 4 }
+  ],
+  7: [
+    { loop: [7509843, 9529641, 8719722, 8649432, 7519743, 8429652, 7619733, 8439552, 7509843], maxSteps: 13 }
+  ],
+  8: [
+    { loop: [43208766, 85317642, 75308643, 84308652, 86308632, 86326632, 64326654, 43208766], maxSteps: 15 },
+    { loop: [63317664, 63317664], maxSteps: 4},
+    { loop: [64308654, 83208762, 86526432, 64308654], maxSteps: 19 },
+    { loop: [97508421, 97508421], maxSteps: 3 }
+  ],
+  9: [
+    { loop: [554999445, 554999445], maxSteps: 1 },
+    { loop: [753098643, 954197541, 883098612, 976494321, 874197522, 865296432, 763197633, 844296552, 762098733, 964395531, 863098632, 965296431, 873197622, 865395432, 753098643], maxSteps: 13 },
+    { loop: [864197532, 864197532], maxSteps: 7 }
+  ],
+  10: [
+    { loop: [4332087666, 8533176642, 7533086643, 8433086652, 8633086632, 8633266632, 6433266654, 4332087666], maxSteps: 10 },
+    { loop: [6333176664, 6333176664], maxSteps: 3 },
+    { loop: [6431088654, 8732087622, 8655264432, 6431088654], maxSteps: 14 },
+    { loop: [6433086654, 8332087662, 8653266432, 6433086654], maxSteps: 17 },
+    { loop: [6543086544, 8321088762, 8765264322, 6543086544], maxSteps: 9 },
+    { loop: [9751088421, 9775084221, 9755084421, 9751088421], maxSteps: 6 },
+    { loop: [9753086421, 9753086421], maxSteps: 10 },
+    { loop: [9975084201, 9975084201], maxSteps: 2}
+  ]
+}
 
 let stepCount = 0;
 let resultList = [];
 let numDigits = 4;
 let lastResult = "0000";
-const convergentKeys = Object.keys(convergents).map(k => parseInt(k));
+const convergentKeys = Object.keys(convergenceData).map(Number);
 const MIN_DIGITS = Math.min(...convergentKeys);
 const MAX_DIGITS = Math.max(...convergentKeys);
 
 
-function getKaprekarMessage(stepsTaken) {
+function getKaprekarMessage(stepsTaken, result) {
   const messagesForDigits = kaprekarMessages[numDigits] || {};
-  // Exact match for steps
+
+  // Direct match from the message table (for 2–4 digit stuff)
   if (messagesForDigits[stepsTaken]) {
     return messagesForDigits[stepsTaken];
   }
-  // Handle special loop case
+
+  // If result is in a loop and we have convergence data, build a formula-based message
+  const loopIndex = getLoopIndex(result); // assumes result is numeric or cleaned string
+  const loops = convergenceData[numDigits];
+
+  if (loopIndex !== -1 && loops?.[loopIndex]) {
+    const totalLoops = loops.length;
+    const maxSteps = loops[loopIndex].maxSteps;
+    return `This is one of ${totalLoops} known loops for ${numDigits}-digit numbers.<br>` +
+           `This particular loop (index ${loopIndex}) takes at most <b>${maxSteps} step${maxSteps !== 1 ? "s" : ""}</b> to reach.<br>` +
+           `(If it took you more... please show me 👀)`;
+  }
+
+  // Loop-based fallback
   if (messagesForDigits.loop) {
     return messagesForDigits.loop;
   }
-  // Fallback to shared default message if available
+
+  // Generic fallback
   return kaprekarMessages.default.fallback;
 }
 
 function singleConvergentPoint() {
-  const cycles = convergents[numDigits];
-  if (!cycles || !Array.isArray(cycles)) return false;
+  const loops = convergenceData[numDigits];
+  if (!loops || loops.length !== 1) return false;
 
-  return (
-    cycles.length === 1 &&
-    new Set(cycles[0]).size === 1 // e.g., [6174, 6174] → Set: {6174}
-  );
+  return new Set(loops[0].loop).size === 1;
 }
 
+function getLoopIndex(num) {
+  const numInt = parseInt(num.toString().replace(/,/g, ''));
+  const loops = convergenceData[numDigits];
+  if (!loops) return -1;
+
+  return loops.findIndex(entry => entry.loop.includes(numInt));
+}
+
+function getMaxStepsForLoop(num) {
+  const index = getLoopIndex(num);
+  const loops = convergenceData[numDigits];
+  return index !== -1 ? loops[index].maxSteps : null;
+}
 
 // Updates the #clickable-digits container to have exactly numDigits children.
 function updateDigitsContainer() {
@@ -216,10 +240,10 @@ function brokeReality(stepsTaken) {
 
 function numIsConvergent(num) {
   const numInt = parseInt(num.toString().replace(/,/g, ''));
-  const cycles = convergents[numDigits];
-  if (!cycles || !Array.isArray(cycles)) return false;
+  const loops = convergenceData[numDigits];
+  if (!loops || !Array.isArray(loops)) return false;
 
-  return cycles.some(cycle => cycle.includes(numInt));
+  return loops.some(entry => entry.loop.includes(numInt));
 }
 
 
@@ -230,7 +254,7 @@ function celebrateKaprekar(stepsTaken, btnMsg) {
   continueBtn.textContent = btnMsg;
   continueBtn.classList.add("reached")
 
-  showBottomMessage(getKaprekarMessage(stepsTaken));
+  showBottomMessage(getKaprekarMessage(stepsTaken, lastResult));
 
   if (brokeReality(stepsTaken)) {
     continueBtn.textContent = "Unplug Reality?";
