@@ -12,11 +12,12 @@ This is a lightweight, interactive web app that demonstrates the Kaprekar routin
 
 ## How to Use
 
-1. Open `index.html` in your browser (or visit the GitHub Pages link if hosted).
+1. Open <a href="https://sampanes.github.io/kaprekar-gui/index.html" target="_blank">index.html</a> in your browser (which is this address https://sampanes.github.io/kaprekar-gui/index.html).
 2. Tap the digits to set your 4-digit starting number.
 3. Click **Start with ####** to begin.
 4. Use **Continue** to perform more Kaprekar steps until you reach 6174.
 5. Enjoy stats and fun messages along the way!
+6. If you get bored of that... try clicking one of the two words in the title...
 
 ## Requirements
 
