@@ -109,6 +109,7 @@ body {
     gap: 5px; 
     font-family: 'Fira Mono', 'JetBrains Mono', 'Roboto Mono', 'Menlo', 'Consolas', monospace;
     white-space: pre;
+    align-self: flex-end;
   }
   
    /* Confetti celebration */ 
