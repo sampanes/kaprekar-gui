@@ -90,17 +90,18 @@ body {
      gap: 10px; 
    } 
     
-   .step-row { 
-     display: flex;
-     align-items: center;
-        font-family: monospace
-   } 
+.step-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: monospace;
+}
 
-  .step-label { 
-    width: 70px; 
-    font-weight: bold; 
-    font-family: 'Fira Mono', 'JetBrains Mono', 'Roboto Mono', 'Menlo', 'Consolas', monospace;
-  } 
+.step-label { 
+ font-weight: bold; 
+ font-family: 'Fira Mono', 'JetBrains Mono', 'Roboto Mono', 'Menlo', 'Consolas', monospace;
+ margin-bottom: 2px;
+} 
   
   .step-content { 
     font-size: 18px; 
