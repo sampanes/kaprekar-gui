@@ -80,6 +80,7 @@ let stepCount = 0;
 let resultList = [];
 let numDigits = 4;
 let lastResult = "0000";
+let pendingCelebrationTimeout = null;
 const convergentKeys = Object.keys(convergenceData).map(Number);
 const MIN_DIGITS = Math.min(...convergentKeys);
 const MAX_DIGITS = Math.max(...convergentKeys);
@@ -108,14 +109,28 @@ function getKaprekarMessage(stepsTaken, result) {
     const totalLoops = loops.length;
     const loopData = loops[loopIndex];
     const maxSteps = loopData.maxSteps;
-    const loopLength = new Set(loopData.loop).size;
-    const maxTotalSteps = maxSteps + loopLength;
+    const period = new Set(loopData.loop).size;
+    const maxTotalSteps = maxSteps + period;
+    const isSinglePoint = singleConvergentPoint();
+    const naturalClose = isSinglePoint ? maxSteps : maxTotalSteps;
+
+    // Spam path — user kept clicking Continue past the natural close.
+    // Still mathematically inside the same known cycle, just walking it
+    // again. Report how many extra cycles they ran.
+    if (stepsTaken > naturalClose) {
+      const extra = stepsTaken - naturalClose;
+      const cycles = extra / period;
+      const loopsRun = (cycles % 1 === 0) ? String(cycles) : cycles.toFixed(1);
+      const tail = period === 1 ? "extra times" : "extra times around the cycle";
+      return `You spammed the Continue button and looped <b>${loopsRun}</b> ${tail}. 🌀<br>` +
+             `Past the natural close, every click just walks the same cycle again.`;
+    }
+
     const oneOf = `This is ${totalLoops === 1 ? "the only" : "one of " + totalLoops} known loop${totalLoops === 1 ? "" : "s"}`;
     return `A loop appears as the highlighted number changing until it returns to itself.<br>` +
            `${oneOf} for ${numDigits}-digit numbers.<br>` +
            `This particular loop takes at most <b>${maxSteps} step${maxSteps !== 1 ? "s" : ""}</b> to reach,` +
-           ` <b>${maxTotalSteps} step${maxTotalSteps !== 1 ? "s" : ""}</b> total including one full cycle.<br>` +
-           `(If it took you more... please show me 👀)`;
+           ` <b>${maxTotalSteps} step${maxTotalSteps !== 1 ? "s" : ""}</b> total including one full cycle.`;
   }
 
   if (messagesForDigits.loop) {
@@ -517,7 +532,14 @@ function animateStep(num1, num2, result) {
   });
 
   if (pendingCelebration) {
-    setTimeout(pendingCelebration, partsData.length * STEP_PART_DURATION + STEP_CELEBRATION_TAIL);
+    // Debounce: only the most recently scheduled celebration actually fires.
+    // If the user spams Continue, we coalesce the celebrate-confetti-message
+    // into one event at the latest stepCount.
+    if (pendingCelebrationTimeout) clearTimeout(pendingCelebrationTimeout);
+    pendingCelebrationTimeout = setTimeout(() => {
+      pendingCelebrationTimeout = null;
+      pendingCelebration();
+    }, partsData.length * STEP_PART_DURATION + STEP_CELEBRATION_TAIL);
   }
 }
 
@@ -532,6 +554,10 @@ function clearSteps() {
   lastResult = "0000";
   continueBtn.classList.remove("reached", "btn-finished");
   resultList = [];
+  if (pendingCelebrationTimeout) {
+    clearTimeout(pendingCelebrationTimeout);
+    pendingCelebrationTimeout = null;
+  }
   hideBottomMessage();
 }
 
@@ -575,6 +601,42 @@ continueBtn.onclick = () => {
   const [n1, n2, res] = kaprekarStep(lastResult);
   animateStep(n1, n2, res);
 };
+
+/* --------------------------------------------------------------------------
+   Reality-break alarm — dormant
+   ------------------------------------------------------------------------
+   Mathematically unreachable: the verification test (kaprekar.test.js)
+   confirms that every n-digit non-repdigit input for n in 2..10 lands in
+   one of the known cycles in convergenceData. If a future change ever
+   produces a kaprekar result outside that table, this alarm exists to
+   shout about it. Intentionally never called from any user flow.
+   Exposed on window for dev-time preview: open the console and call
+       window.__kaprekarTriggerRealityBreak({ note: "test" })
+   to see the warning lights without breaking math.
+-------------------------------------------------------------------------- */
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+
+function triggerRealityBreak(diagnostic) {
+  if (document.querySelector(".reality-banner")) return; // idempotent
+  document.body.classList.add("reality-broken");
+  const banner = document.createElement("div");
+  banner.className = "reality-banner";
+  banner.innerHTML = `
+    <div class="reality-banner-eyebrow">⚠ &nbsp;ANOMALY&nbsp; ⚠</div>
+    <div class="reality-banner-title">Reality-breaking combination detected</div>
+    <div class="reality-banner-text">Send this to me immediately.</div>
+    <pre class="reality-banner-diag">${escapeHtml(JSON.stringify(diagnostic ?? {}, null, 2))}</pre>
+  `;
+  document.body.appendChild(banner);
+}
+
+if (typeof window !== "undefined") {
+  window.__kaprekarTriggerRealityBreak = triggerRealityBreak;
+}
 
 /* --------------------------------------------------------------------------
    Non-blocking error nudge (replaces alert())
