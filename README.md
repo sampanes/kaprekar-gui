@@ -12,6 +12,8 @@ This branch contains Python utilities and analysis scripts related to the Kaprek
 
 ## How to Use
 
+Just use mine -> [https://sampanes.github.io/kaprekar-gui/]
+
 ### Setup
 
 1. Clone the repository.
