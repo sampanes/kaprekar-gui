@@ -81,6 +81,21 @@ body::before {
   z-index: 0;
 }
 
+/* Subtle dot grid as second background layer */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(20, 20, 19, 0.05) 0.7px, transparent 1.2px);
+  background-size: 24px 24px;
+  background-position: 0 0;
+  opacity: 0.55;
+  z-index: 0;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 85%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 85%);
+}
+
 /* ----------------------------------------------------------------------------
    App frame
 ---------------------------------------------------------------------------- */
@@ -275,43 +290,59 @@ body::before {
   user-select: none;
   pointer-events: auto;
   z-index: 1;
+  overflow: hidden;
   transition:
     transform 200ms var(--ease-out),
     background-color 200ms var(--ease-out),
     box-shadow 200ms var(--ease-out),
     color 200ms var(--ease-out);
   box-shadow:
-    inset 0 1px 2px rgba(20, 20, 19, 0.05),
-    0 1px 2px rgba(20, 20, 19, 0.04);
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(20, 20, 19, 0.05),
+    0 1px 2px rgba(20, 20, 19, 0.04),
+    0 8px 16px -8px rgba(20, 20, 19, 0.06);
   touch-action: manipulation;
 }
 
-.digit::after {
+.digit::before {
   content: "";
   position: absolute;
-  inset: -2px;
-  border-radius: 50%;
-  border: 1.5px solid transparent;
-  transition: border-color 220ms var(--ease-out);
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle, rgba(243, 115, 56, 0.30) 0%, rgba(243, 115, 56, 0) 65%);
+  opacity: 0;
+  transform: scale(0.4);
   pointer-events: none;
+  z-index: -1;
+}
+
+.digit:active::before {
+  animation: digit-ripple 460ms var(--ease-out);
+}
+
+@keyframes digit-ripple {
+  0%   { opacity: 0.55; transform: scale(0.4); }
+  100% { opacity: 0;    transform: scale(1.4); }
 }
 
 .digit:hover {
   transform: translateY(-2px);
   background: var(--canvas-lifted);
   box-shadow:
-    inset 0 1px 2px rgba(20, 20, 19, 0.04),
-    0 8px 24px rgba(20, 20, 19, 0.08);
-}
-
-.digit:hover::after {
-  border-color: var(--signal-light);
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -1px 0 rgba(20, 20, 19, 0.04),
+    0 0 0 2px var(--signal-light),
+    0 12px 28px -8px rgba(20, 20, 19, 0.14);
 }
 
 .digit:active {
   transform: translateY(0) scale(0.96);
   background: var(--canvas-deeper);
   transition-duration: 80ms;
+  box-shadow:
+    inset 0 1px 2px rgba(20, 20, 19, 0.08),
+    0 0 0 2px var(--signal),
+    0 4px 12px -6px rgba(20, 20, 19, 0.10);
 }
 
 .digit:focus-visible {
@@ -411,13 +442,31 @@ body::before {
 }
 
 .btn-arrow {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-size: 16px;
+  line-height: 1;
+  min-width: 1em;
   transition: transform 280ms var(--ease-out);
+}
+
+.btn-arrow::before {
+  content: "→";
+}
+
+.btn.reached .btn-arrow::before,
+.btn.btn-finished .btn-arrow::before {
+  content: "✓";
 }
 
 .btn:hover:not(:disabled) .btn-arrow {
   transform: translateX(4px);
+}
+
+.btn.reached .btn-arrow,
+.btn.btn-finished .btn-arrow {
+  transform: translateX(0) !important;
 }
 
 /* The .reached state — winning end-of-loop button. */
@@ -451,6 +500,21 @@ body::before {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-height: 0;
+}
+
+.steps:empty::before {
+  content: "Press Start to begin. Each iteration shows here.";
+  display: block;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--dust);
+  padding: 18px 8px;
+  border: 1px dashed rgba(20, 20, 19, 0.08);
+  border-radius: var(--r-cta);
+  background: var(--canvas);
 }
 
 .step-row {
@@ -543,6 +607,7 @@ body::before {
 
 .step-part.convergent {
   position: relative;
+  z-index: 0;
   color: var(--signal);
   font-weight: 700;
 }
