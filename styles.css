@@ -208,7 +208,7 @@ body::after {
   transition: transform 240ms var(--ease-out);
 }
 
-#kaprekar.title-word::before     { content: "−"; }
+#kaprekar.title-word::before     { content: "-"; }
 #convergence.title-word::before  { content: "+"; }
 
 .title-word:hover::before {
