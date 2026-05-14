@@ -1,33 +1,54 @@
-<!DOCTYPE html> 
- <html lang="en"> 
- <head> 
-   <link href="https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap" rel="stylesheet">
-   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
-   <meta charset="UTF-8" /> 
-   <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
-   <title>Kaprekar Web</title> 
-   <link rel="stylesheet" href="styles.css" /> 
-   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
- </head> 
-  
- <body> 
-   <div class="app"> 
-     <h1> 
-       <span id="kaprekar" style="cursor: pointer;">Kaprekar's</span> 
-       <span id="convergence" style="cursor: pointer;">Convergence</span> 
-     </h1> 
-     <div id="clickable-digits" class="digits"></div> 
-  
-     <div class="buttons"> 
-       <button id="startBtn">Start with ####</button> 
-       <button id="continueBtn" style="display: none">Continue with ####</button> 
-     </div> 
-  
-     <div id="steps"></div> 
-     <div id="kaprekar-message" class="kaprekar-msg"></div> 
-   </div> 
-  
-   <script src="./script.js"></script> 
- </body> 
-  
- </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Kaprekar's Convergence</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,1..1000;1,1..1000&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <main class="app" role="main">
+    <header class="app-header">
+      <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span><span id="digit-mode-label">4-DIGIT MODE</span></p>
+      <h1 class="title">
+        <span id="kaprekar" class="title-word" data-action="decrease">Kaprekar's</span>
+        <span class="title-sep" aria-hidden="true">·</span>
+        <span id="convergence" class="title-word" data-action="increase">Convergence</span>
+      </h1>
+      <p class="subtitle">Tap a digit to cycle it. Tap the title words to change digit count.</p>
+    </header>
+
+    <section class="digits-section">
+      <svg class="orbital-arc" viewBox="0 0 800 100" preserveAspectRatio="none" aria-hidden="true">
+        <ellipse cx="400" cy="50" rx="386" ry="42" fill="none" stroke="currentColor" stroke-width="1" />
+      </svg>
+      <div id="clickable-digits" class="digits"></div>
+    </section>
+
+    <div class="buttons">
+      <button id="startBtn" class="btn btn-primary">Start with ####</button>
+      <button id="continueBtn" class="btn btn-secondary" style="display: none">
+        <span class="btn-label">Continue with ####</span>
+        <span class="btn-arrow" aria-hidden="true">→</span>
+      </button>
+    </div>
+
+    <section id="steps" class="steps" aria-live="polite"></section>
+
+    <div id="kaprekar-message" class="kaprekar-msg" role="status"></div>
+
+    <footer class="app-footer">
+      <span class="footer-dot" aria-hidden="true"></span>
+      <span class="footer-text">A study in convergence</span>
+    </footer>
+  </main>
+
+  <script src="./script.js"></script>
+</body>
+</html>
