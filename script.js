@@ -102,7 +102,8 @@
      const loopLength = new Set(loopData.loop).size; // in case of repeated first/last node
      const maxTotalSteps = maxSteps + loopLength;
      const oneOf = `This is ${totalLoops === 1 ? "the only" : "one of " + totalLoops} known loop${totalLoops === 1 ? "" : "s"}`;
-     return `${oneOf} for ${numDigits}-digit numbers.<br>` +
+     return `A loop appears as the highlighted number changing until it returns to itself.<br>` +
+            `${oneOf} for ${numDigits}-digit numbers.<br>` +
 	       `This particular loop takes at most <b>${maxSteps} step${maxSteps !== 1 ? "s" : ""}</b> to reach,` +
 	       ` <b>${maxTotalSteps} step${maxTotalSteps !== 1 ? "s" : ""}</b> total including one full cycle.<br>` +
      `(If it took you more... please show me 👀)`;
