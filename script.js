@@ -302,12 +302,138 @@ function celebrateKaprekar(stepsTaken, btnMsg) {
   continueBtn.classList.add("reached");
 
   showBottomMessage(getKaprekarMessage(stepsTaken, lastResult));
+  injectCycleViz(lastResult);
+
+  // Pulse the whole app frame briefly to mark the moment.
+  const app = document.querySelector(".app");
+  if (app) {
+    app.classList.remove("celebrating");
+    void app.offsetWidth;
+    app.classList.add("celebrating");
+    setTimeout(() => app.classList.remove("celebrating"), 1200);
+  }
 
   if (brokeReality(stepsTaken)) {
     setBtnLabel(continueBtn, "Unplug Reality?");
     continueBtn.classList.remove("reached");
     continueBtn.classList.add("btn-finished");
   }
+}
+
+/* --------------------------------------------------------------------------
+   Cycle visualization — small SVG diagram of the loop topology
+-------------------------------------------------------------------------- */
+const SVG_NS = "http://www.w3.org/2000/svg";
+
+function svgEl(tag, attrs = {}, text) {
+  const el = document.createElementNS(SVG_NS, tag);
+  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+  if (text !== undefined) el.textContent = text;
+  return el;
+}
+
+function buildCycleSVG(members) {
+  const n = members.length;
+
+  if (n === 1) {
+    const svg = svgEl("svg", {
+      class: "cycle-viz",
+      viewBox: "0 0 220 110",
+      "aria-hidden": "true",
+    });
+    // self-loop arc above the node
+    svg.appendChild(svgEl("path", {
+      class: "cycle-edge",
+      d: "M 96 56 C 80 6, 140 6, 124 56",
+    }));
+    // arrowhead at the loop's return
+    svg.appendChild(svgEl("path", {
+      class: "cycle-arrow",
+      d: "M 124 56 L 120 50 M 124 56 L 130 52",
+    }));
+    svg.appendChild(svgEl("circle", {
+      class: "cycle-node",
+      cx: 110, cy: 64, r: 10,
+    }));
+    svg.appendChild(svgEl("text", {
+      class: "cycle-label",
+      x: 110, y: 96, "text-anchor": "middle",
+    }, "fixed point"));
+    return svg;
+  }
+
+  const w = 320, h = 220;
+  const cx = w / 2, cy = h / 2 - 8;
+  const r = Math.min(cx, cy) - 30;
+  const svg = svgEl("svg", {
+    class: "cycle-viz",
+    viewBox: `0 0 ${w} ${h}`,
+    "aria-hidden": "true",
+  });
+
+  const nodes = members.map((num, i) => {
+    const angle = -Math.PI / 2 + (i * 2 * Math.PI) / n;
+    return { num, x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+  });
+
+  // edges: curved arcs between consecutive nodes, with subtle outward bow
+  for (let i = 0; i < n; i++) {
+    const from = nodes[i];
+    const to = nodes[(i + 1) % n];
+    const midX = (from.x + to.x) / 2;
+    const midY = (from.y + to.y) / 2;
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const length = Math.hypot(dx, dy);
+    // bow outward from the centroid (cx, cy)
+    const outX = midX - cx;
+    const outY = midY - cy;
+    const outLen = Math.hypot(outX, outY) || 1;
+    const bow = 14;
+    const cpX = midX + (outX / outLen) * bow;
+    const cpY = midY + (outY / outLen) * bow;
+    svg.appendChild(svgEl("path", {
+      class: "cycle-edge",
+      d: `M ${from.x.toFixed(1)} ${from.y.toFixed(1)} Q ${cpX.toFixed(1)} ${cpY.toFixed(1)} ${to.x.toFixed(1)} ${to.y.toFixed(1)}`,
+    }));
+  }
+
+  // nodes
+  nodes.forEach((node) => {
+    svg.appendChild(svgEl("circle", {
+      class: "cycle-node",
+      cx: node.x.toFixed(1),
+      cy: node.y.toFixed(1),
+      r: 7,
+    }));
+  });
+
+  // period label below the cluster
+  svg.appendChild(svgEl("text", {
+    class: "cycle-label",
+    x: cx,
+    y: h - 12,
+    "text-anchor": "middle",
+  }, `period ${n}`));
+
+  return svg;
+}
+
+function injectCycleViz(resultNum) {
+  const msgBox = document.getElementById("kaprekar-message");
+  if (!msgBox) return;
+  const loopIndex = getLoopIndex(resultNum);
+  const loops = convergenceData[numDigits];
+  if (loopIndex === -1 || !loops?.[loopIndex]) return;
+  const members = [...new Set(loops[loopIndex].loop)];
+  const svg = buildCycleSVG(members);
+  // mark which member is the user's landing point
+  const cycleNodes = svg.querySelectorAll(".cycle-node");
+  const landingIdx = members.indexOf(parseInt(String(resultNum).replace(/,/g, ''), 10));
+  if (landingIdx !== -1 && cycleNodes[landingIdx]) {
+    cycleNodes[landingIdx].classList.add("is-current");
+  }
+  msgBox.appendChild(svg);
 }
 
 /* --------------------------------------------------------------------------
