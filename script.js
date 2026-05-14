@@ -81,6 +81,7 @@ let resultList = [];
 let numDigits = 4;
 let lastResult = "0000";
 let pendingCelebrationTimeout = null;
+let showMeTimeout = null;
 const convergentKeys = Object.keys(convergenceData).map(Number);
 const MIN_DIGITS = Math.min(...convergentKeys);
 const MAX_DIGITS = Math.max(...convergentKeys);
@@ -461,9 +462,9 @@ function injectCycleViz(resultNum) {
 /* --------------------------------------------------------------------------
    "Show me" the cycle — walks a visit marker around every member of the
    loop the user just closed, with a label flashing the current value.
+   (showMeTimeout is declared with the other top-level state above to avoid
+   a temporal-dead-zone reference during initial updateDigitsContainer().)
 -------------------------------------------------------------------------- */
-let showMeTimeout = null;
-
 function injectShowMeControls(msgBox, members) {
   const controls = document.createElement("div");
   controls.className = "show-me-controls";
