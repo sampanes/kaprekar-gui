@@ -284,58 +284,63 @@
    row.appendChild(content); 
    stepsDiv.appendChild(row); 
   
-   // update button state immediately before animation 
-   lastResult = result; 
-  
-   if (singleConvergentPoint() && numIsConvergent(lastResult)) { 
-     celebrateKaprekar(stepCount, "Kaprekar reached!"); 
-   } else if (numIsConvergent(lastResult)) { 
-  
-     console.log("Animate step, num is convergent: ",resultList); 
-     const lastNum = parseInt(lastResult); 
-     const appearances = resultList.filter(n => n === lastNum).length; 
-  
-     if (appearances >= 2) { 
-       celebrateKaprekar(stepCount, "Loop closed!"); 
-     } else { 
-       continueBtn.textContent = `Loop with ${lastResult}`; 
-       continueBtn.disabled = false; 
-       continueBtn.style.display = "inline-block"; 
-       continueBtn.style.backgroundColor = ""; 
-       continueBtn.style.color = ""; 
-       continueBtn.style.border = ""; 
-     } 
-   } else { 
-     continueBtn.textContent = `Continue with ${lastResult}`; 
-     continueBtn.disabled = false; 
-     continueBtn.style.display = "inline-block"; 
-     continueBtn.style.backgroundColor = ""; 
-     continueBtn.style.color = ""; 
-     continueBtn.style.border = ""; 
-   } 
-   
+   // update button state immediately before animation
+   lastResult = result;
+
+   let pendingCelebration = null;
+   if (singleConvergentPoint() && numIsConvergent(lastResult)) {
+     pendingCelebration = () => celebrateKaprekar(stepCount, "Kaprekar reached!");
+   } else if (numIsConvergent(lastResult)) {
+
+     console.log("Animate step, num is convergent: ",resultList);
+     const lastNum = parseInt(lastResult);
+     const appearances = resultList.filter(n => n === lastNum).length;
+
+     if (appearances >= 2) {
+       pendingCelebration = () => celebrateKaprekar(stepCount, "Loop closed!");
+     } else {
+       continueBtn.textContent = `Loop with ${lastResult}`;
+       continueBtn.disabled = false;
+       continueBtn.style.display = "inline-block";
+       continueBtn.style.backgroundColor = "";
+       continueBtn.style.color = "";
+       continueBtn.style.border = "";
+     }
+   } else {
+     continueBtn.textContent = `Continue with ${lastResult}`;
+     continueBtn.disabled = false;
+     continueBtn.style.display = "inline-block";
+     continueBtn.style.backgroundColor = "";
+     continueBtn.style.color = "";
+     continueBtn.style.border = "";
+   }
+
    const paddedWidth = numDigits + Math.floor((numDigits - 1) / 3);
-  
-   const parts = [ 
-     Number(num1).toLocaleString().padStart(paddedWidth), 
-     " - ", 
-     Number(num2).toLocaleString().padStart(paddedWidth), 
-     " = ", 
-     Number(result).toLocaleString().padStart(paddedWidth) 
-   ]; 
-   parts.forEach((text, i) => { 
-     const delay = i * 300; 
-     setTimeout(() => { 
-       const span = document.createElement("span"); 
-       span.textContent = text; 
-       if (numIsConvergent(text)) { 
-         span.style.fontWeight = "bold"; 
-         span.style.color = "#ff6f91"; 
-       } 
-       content.appendChild(span); 
-     }, delay); 
-   }); 
- } 
+
+   const parts = [
+     Number(num1).toLocaleString().padStart(paddedWidth),
+     " - ",
+     Number(num2).toLocaleString().padStart(paddedWidth),
+     " = ",
+     Number(result).toLocaleString().padStart(paddedWidth)
+   ];
+   parts.forEach((text, i) => {
+     const delay = i * 300;
+     setTimeout(() => {
+       const span = document.createElement("span");
+       span.textContent = text;
+       if (numIsConvergent(text)) {
+         span.style.fontWeight = "bold";
+         span.style.color = "#ff6f91";
+       }
+       content.appendChild(span);
+     }, delay);
+   });
+
+   if (pendingCelebration) {
+     setTimeout(pendingCelebration, parts.length * 300);
+   }
+ }
   
  function clearSteps() { 
    stepsDiv.innerHTML = ""; 
