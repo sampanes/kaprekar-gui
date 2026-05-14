@@ -197,22 +197,26 @@ function getDigitsValue() {
   return BigInt(str);
 }
 
-document.getElementById("kaprekar").addEventListener("click", function () {
-  if (numDigits > MIN_DIGITS) {
-    numDigits--;
-    document.documentElement.style.setProperty('--digit-count', numDigits);
-    updateDigitsContainer();
-    updateStartText();
-  }
-});
+function changeDigitCount(delta) {
+  const next = numDigits + delta;
+  if (next < MIN_DIGITS || next > MAX_DIGITS) return;
+  numDigits = next;
+  document.documentElement.style.setProperty('--digit-count', numDigits);
+  updateDigitsContainer();
+  updateStartText();
+}
 
-document.getElementById("convergence").addEventListener("click", function () {
-  if (numDigits < MAX_DIGITS) {
-    numDigits++;
-    document.documentElement.style.setProperty('--digit-count', numDigits);
-    updateDigitsContainer();
-    updateStartText();
-  }
+["kaprekar", "convergence"].forEach((id) => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const delta = id === "kaprekar" ? -1 : +1;
+  el.addEventListener("click", () => changeDigitCount(delta));
+  el.addEventListener("keydown", (ev) => {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.preventDefault();
+      changeDigitCount(delta);
+    }
+  });
 });
 
 updateDigitsContainer();
@@ -480,11 +484,13 @@ function animateStep(num1, num2, result) {
   let pendingCelebration = null;
   if (singleConvergentPoint() && numIsConvergent(lastResult)) {
     pendingCelebration = () => celebrateKaprekar(stepCount, "Kaprekar reached!");
+    row.classList.add("loop-closed");
   } else if (numIsConvergent(lastResult)) {
     const lastNum = parseInt(lastResult);
     const appearances = resultList.filter(n => n === lastNum).length;
     if (appearances >= 2) {
       pendingCelebration = () => celebrateKaprekar(stepCount, "Loop closed!");
+      row.classList.add("loop-closed");
     } else {
       setBtnLabel(continueBtn, `Loop with ${lastResult}`);
       showContinueBtn();
@@ -582,3 +588,26 @@ function flashError(message) {
 }
 
 updateStartText();
+
+/* --------------------------------------------------------------------------
+   Keyboard shortcuts: Space / Enter to advance Continue or Start.
+   Focused digits keep their existing Space/Enter cycle behavior.
+-------------------------------------------------------------------------- */
+document.addEventListener("keydown", (ev) => {
+  if (ev.key !== " " && ev.key !== "Enter") return;
+  const active = document.activeElement;
+  if (active) {
+    if (active.tagName === "INPUT" || active.tagName === "TEXTAREA") return;
+    if (active.classList) {
+      if (active.classList.contains("digit")) return;
+      if (active.classList.contains("title-word")) return;
+    }
+    if (active === startBtn || active === continueBtn) return;
+  }
+  ev.preventDefault();
+  if (!continueBtn.disabled && continueBtn.style.display !== "none") {
+    continueBtn.click();
+  } else if (!startBtn.disabled) {
+    startBtn.click();
+  }
+});

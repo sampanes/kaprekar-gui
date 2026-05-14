@@ -547,6 +547,17 @@ body::after {
 
 .step-row:hover::before { height: 40%; }
 
+.step-row.loop-closed {
+  background: linear-gradient(180deg, var(--canvas-lifted), var(--canvas));
+  border-color: rgba(207, 69, 0, 0.20);
+  box-shadow: 0 4px 18px -8px rgba(207, 69, 0, 0.20);
+}
+
+.step-row.loop-closed::before {
+  height: 60%;
+  background: var(--signal);
+}
+
 @keyframes step-enter {
   0%   { opacity: 0; transform: translateY(8px) scale(0.985); }
   100% { opacity: 1; transform: translateY(0)   scale(1);     }
