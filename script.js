@@ -453,6 +453,77 @@ function injectCycleViz(resultNum) {
     cycleNodes[landingIdx].classList.add("is-current");
   }
   msgBox.appendChild(svg);
+  if (members.length > 1) {
+    injectShowMeControls(msgBox, members);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   "Show me" the cycle — walks a visit marker around every member of the
+   loop the user just closed, with a label flashing the current value.
+-------------------------------------------------------------------------- */
+let showMeTimeout = null;
+
+function injectShowMeControls(msgBox, members) {
+  const controls = document.createElement("div");
+  controls.className = "show-me-controls";
+
+  const label = document.createElement("div");
+  label.className = "show-me-label";
+  label.setAttribute("aria-live", "polite");
+  label.textContent = "";
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "show-me-btn";
+  btn.textContent = "Show me the cycle";
+  btn.addEventListener("click", () => showMeTheCycle(btn, label, members));
+
+  controls.appendChild(label);
+  controls.appendChild(btn);
+  msgBox.appendChild(controls);
+}
+
+function showMeTheCycle(btn, label, members) {
+  if (showMeTimeout) clearTimeout(showMeTimeout);
+  btn.disabled = true;
+  btn.classList.add("playing");
+
+  const nodes = document.querySelectorAll(".cycle-node");
+  nodes.forEach(n => n.classList.remove("is-visiting"));
+
+  const stepMs = Math.max(280, Math.min(580, 5000 / members.length));
+
+  let i = 0;
+  const tick = () => {
+    if (i > 0) {
+      const prev = nodes[i - 1];
+      if (prev) prev.classList.remove("is-visiting");
+    }
+    if (i >= members.length) {
+      btn.disabled = false;
+      btn.classList.remove("playing");
+      btn.textContent = "Show me again";
+      showMeTimeout = null;
+      return;
+    }
+    const node = nodes[i];
+    if (node) node.classList.add("is-visiting");
+    label.textContent = members[i].toLocaleString();
+    label.classList.remove("flash");
+    void label.offsetWidth;  // restart animation
+    label.classList.add("flash");
+    i++;
+    showMeTimeout = setTimeout(tick, stepMs);
+  };
+  tick();
+}
+
+function cancelShowMe() {
+  if (showMeTimeout) {
+    clearTimeout(showMeTimeout);
+    showMeTimeout = null;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -558,16 +629,19 @@ function clearSteps() {
     clearTimeout(pendingCelebrationTimeout);
     pendingCelebrationTimeout = null;
   }
+  cancelShowMe();
   hideBottomMessage();
 }
 
 function showBottomMessage(inMsg) {
+  cancelShowMe();
   const msgBox = document.getElementById("kaprekar-message");
   msgBox.innerHTML = inMsg;
   msgBox.classList.add("show");
 }
 
 function hideBottomMessage() {
+  cancelShowMe();
   const msgBox = document.getElementById("kaprekar-message");
   msgBox.textContent = "";
   msgBox.classList.remove("show");
@@ -660,11 +734,11 @@ document.addEventListener("keydown", (ev) => {
   const active = document.activeElement;
   if (active) {
     if (active.tagName === "INPUT" || active.tagName === "TEXTAREA") return;
+    if (active.tagName === "BUTTON") return;  // any focused button handles its own key
     if (active.classList) {
       if (active.classList.contains("digit")) return;
       if (active.classList.contains("title-word")) return;
     }
-    if (active === startBtn || active === continueBtn) return;
   }
   ev.preventDefault();
   if (!continueBtn.disabled && continueBtn.style.display !== "none") {
